@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TodoListApp"
+             x:Class="TodoListApp.MainPage"
+             BackgroundColor="White">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BoolToStrikethroughConverter x:Key="StrikethroughConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <local:TodoViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, *" Padding="15">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="10" Margin="0,20,0,10">
+            <Border Grid.Column="0" Stroke="Black" StrokeThickness="1" Padding="5">
+                <Entry Placeholder="Заголовок задачи" 
+                       Text="{Binding NewTaskTitle}" 
+                       TextColor="Black"
+                       PlaceholderColor="Gray"
+                       ReturnType="Done"
+                       ReturnCommand="{Binding AddTaskCommand}" />
+            </Border>
+
+            <Button Grid.Column="1" 
+                    Text="+" 
+                    FontSize="24" 
+                    FontAttributes="Bold"
+                    WidthRequest="50" 
+                    HeightRequest="50"
+                    CornerRadius="25"
+                    BackgroundColor="LightGray"
+                    TextColor="Black"
+                    Command="{Binding AddTaskCommand}" />
+        </Grid>
+
+        <CollectionView Grid.Row="1" 
+                        ItemsSource="{Binding Tasks}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="0,5" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+
+                        <CheckBox Grid.Column="0" 
+                                  IsChecked="{Binding IsCompleted}" 
+                                  Color="Black" />
+
+                        <Label Grid.Column="1" 
+                               Text="{Binding Title}" 
+                               TextColor="Black"
+                               VerticalOptions="Center"
+                               TextDecorations="{Binding IsCompleted, Converter={StaticResource StrikethroughConverter}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:TodoViewModel}}, Path=ToggleTaskCommand}" CommandParameter="{Binding .}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+
+                        <Button Grid.Column="2" 
+                                Text="🗑" 
+                                FontSize="20"
+                                BackgroundColor="Transparent"
+                                TextColor="Black"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:TodoViewModel}}, Path=DeleteTaskCommand}" 
+                                CommandParameter="{Binding .}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
